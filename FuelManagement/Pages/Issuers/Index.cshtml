@@ -1,0 +1,115 @@
+﻿@page
+@model FuelManagement.Pages.Issuers.IndexModel
+@{
+}
+
+<div class="container">
+	<div class="row mb-3">
+		<div class="col-md-6">
+			<form method="get">
+				<div class="input-group mb-3">
+					<input type="text" name="Search" value="@Model.Search" class="form-control" placeholder="Search here..." />
+					@if (!string.IsNullOrEmpty(Model.Search))
+					{
+						<a asp-page="./fuel-types" class="btn btn-primary">Clear</a>
+					}
+					else
+					{
+						<button type="submit" class="btn btn-primary">Search</button>
+					}
+				</div>
+			</form>
+		</div>
+
+		<div class="col-md-6 text-right">
+			<a asp-page="./create-issuer" class="btn btn-primary">Create Issuer</a>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<table class="table table-responsive">
+				<thead class="table-dark">
+					<tr>
+						<th>S.No</th>
+						<th>Issuer Name</th>
+						<th>Contact</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@{
+						var index = 1;
+					}
+					@foreach (var issuer in Model.lstIssuers)
+					{
+						<tr>
+							<td>@index</td>
+							<td>@issuer["issuer_name"]</td>
+							<td>@issuer["contact"]</td>
+							<td>
+								<div class="dropdown">
+									<button class="btn btn-link text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+										<i class="fa-solid fa-ellipsis-vertical"></i>
+									</button>
+									<ul class="dropdown-menu">
+										<li>
+											<a class="dropdown-item edit-fuel"
+											   asp-page="./create-issuer" asp-route-id="@issuer["id"]">Edit</a>
+										</li>
+										<li>
+											<a class="dropdown-item text-danger"
+											   onclick="confirmDelete('@Url.Page("./Index", new {handler="Delete",id=@issuer["id"]})')">Delete</a>
+										</li>
+									</ul>
+								</div>
+							</td>
+						</tr>
+						index++;
+					}
+				</tbody>
+			</table>
+		</div>
+		<div class="col-md-12">
+			<nav class="float-end">
+			<ul class="pagination">
+
+				<li class="page-item">
+						<a class="page-link" asp-page="./Index" asp-route-Search="@Model.Search" asp-route-PageNumber="@(Model.PageNumber - 1)">Prevoius</a>
+				</li>
+				@for (int i=1;i<=Model.TotalPages;i++)
+				{
+					<li class="page-item @(Model.PageNumber == i ? "active" : "")">
+						<a class="page-link" asp-page="./Index" asp-route-Search="@Model.Search" asp-route-PageNumber="@i">@i</a>
+					</li>
+				}
+
+				@if(@Model.PageNumber < @Model.TotalPages){
+				<li class="page-item">
+						<a class="page-link" asp-page="./Index" asp-route-Search="@Model.Search" asp-route-PageNumber="@(Model.PageNumber + 1)">Next</a>
+				</li>
+				}
+			</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	<script>
+		function confirmDelete(url) {
+			Swal.fire({
+				title: 'Are you sure?',
+				text: "This action cannot be undone!",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonText: 'Yes, delete it!',
+				cancelButtonText: 'Cancel'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					window.location.href = url; // redirects to OnGetDelete
+				}
+			});
+		}
+	</script>
+}

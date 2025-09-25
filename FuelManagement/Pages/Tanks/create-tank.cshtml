@@ -1,0 +1,60 @@
+﻿@page
+@model FuelManagement.Pages.Tanks.create_tankModel
+@{
+}
+
+<div class="container">
+	<div class="row">
+
+		<form method="post" asp-page-handler="Save">
+			<div class="col-md-12 mx-auto">
+				@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+				{
+					<span class="alert alert-danger">@Model.ErrorMessage</span>
+				}
+				<div class="row">
+
+					@if (Model.tank.id > 0)
+					{
+						<input type="hidden" asp-for="tank.id" />
+						<div class="col-md-6 mb-3">
+							<label>Code </label>
+							<input asp-for="tank.code" class="form-control" readonly disabled>
+						</div>
+						<div class="col-md-6 mb-3">
+							<label>Available Qty </label>
+							<input asp-for="tank.available_qty" class="form-control" readonly disabled>
+						</div>
+					}
+					<div class="col-md-12 mb-3">
+						<label>Fuel Name</label>
+						<input type="text" asp-for="tank.fuel_type" class="form-control" placeholder="Fuel name" />
+						<span asp-validation-for="tank.fuel_type" class="text-danger"></span>
+					</div>
+
+					@* <div class="col-md-6 mb-3"> *@
+					@* 	<label>UOM</label> *@
+					@* 	<select class="form-control" asp-for="tank.uom"> *@
+					@* 		<option selected value="">Select</option> *@
+					@* 		<option value="Litre">Litre</option> *@
+					@* 		<option value="Gallon">Gallon</option> *@
+					@* 	</select> *@
+					@* 	<span asp-validation-for="tank.uom" class="text-danger"></span> *@
+					@* </div> *@
+
+					<div class="col-md-6 mb-3">
+						<label>Tank Size</label>
+						<input type="number" asp-for="tank.tank_size" class="form-control" placeholder="Tank size" />
+						<span asp-validation-for="tank.tank_size" class="text-danger"></span>
+					</div>
+
+					<div class="col-md-12">
+						<a asp-page="./Index" class="btn btn-secondary">Close</a>
+						<button type="submit" class="btn btn-primary float-end">Save</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	
+	</div>
+</div>

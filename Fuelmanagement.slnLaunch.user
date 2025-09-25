@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "FuelmanagementApi\\FuelmanagementApi.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "FuelManagement\\FuelManagement.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

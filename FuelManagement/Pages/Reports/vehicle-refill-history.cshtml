@@ -1,0 +1,68 @@
+﻿@page
+@model FuelManagement.Pages.Reports.vehicle_refill_historyModel
+@{
+	ViewData["Title"] = "Vehicle Refill History";
+}
+
+<div class="card">
+	<div class="card-body">
+		<div class="container">
+			<div class="row mb-3">
+				<div class="col-md-6">
+					<form method="post" asp-page-handler="ViewReport">
+						<div class="input-group">
+							<select class="form-control" asp-for="VehicleId">
+								<option selected disabled>Select</option>
+								@foreach (var vehicle in Model.vehicles)
+								{
+									<option value="@vehicle["id"]">@vehicle["vehicle_number"]</option>
+								}
+							</select>
+							<div class="input-group-prepend">
+								<button class="btn btn-primary" type="submit">Get Report</button>
+							</div>
+							<span asp-validation-for="VehicleId" class="text-danger"></span>
+						</div>
+					</form>
+				</div>
+				<div class="col-md-6">
+					<form method="post" asp-page-handler="DownloadExcel">
+						<button>Download</button>
+					</form>
+				</div>
+			</div>
+
+			<div class="col-md-12">
+				<table class="table table-reponsive">
+					<thead class="table-dark">
+						<tr>
+							<th>S.No</th>
+							<th>Date</th>
+							<th>Vehicle</th>
+							<th>Odometer Reading</th>
+							<th>Qty</th>
+							<th>Fuel Type</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{
+							var index = 1;
+						}
+						@foreach (var refill in Model.lstVehicleRefill)
+						{
+							<tr>
+								<td>@index</td>
+								<td>@refill["issue_date"]</td>
+								<td>@refill["vehicle_number"]</td>
+								<td>@refill["odometer_reading"]</td>
+								<td>@refill["quantity"]</td>
+								<td>@refill["fuel_type"]</td>
+							</tr>
+							index++;
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

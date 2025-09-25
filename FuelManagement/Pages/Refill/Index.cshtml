@@ -1,0 +1,134 @@
+﻿@page
+@model FuelManagement.Pages.Refill.IndexModel
+@{
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="container">
+            <div class="row ">
+                <div class="col-md-6 mb-3">
+                    <form method="get">
+                        <div class="input-group mb-3">
+                            <input type="text" name="Search" value="@Model.Search" class="form-control" placeholder="Search fuel types..." />
+                            @if (!string.IsNullOrEmpty(Model.Search))
+                            {
+                                <a asp-page="./Index" asp-page-handler="cancel" class="btn btn-primary">Clear</a>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            }
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <a asp-page="./create-refill" class="btn btn-primary">Refill Tank</a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-responsive">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>S.NO</th>
+                                <th>Tank</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Refill Date</th>
+                                <th>Invoice No</th>
+                                <th>Vendor</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var index = 1;
+                            }
+                            @foreach (var refill in Model.lstRefills)
+                            {
+
+                                <tr>
+                                    <td>@index</td>
+                                    <td>@refill["tankcode"]</td>
+                                    <td>@refill["quantity_added"]</td>
+                                    <td>@refill["cost_per_liter"]</td>
+                                    <td>@refill["total"]</td>
+                                    <td>@refill["refill_date"]</td>
+                                    <td>@refill["vendor_name"]</td>
+                                    <td>@refill["invoice_no"]</td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item edit-fuel"
+                                                       asp-page="./create-refill" asp-route-id="@refill["id"]">Edit</a>
+                                                </li>
+                                                @* <li> *@
+                                                @*     <a class="dropdown-item text-danger" *@
+                                                @*        onclick="confirmDelete('@Url.Page("./Index", new {handler="Delete",id=@refill["id"]})')">Delete</a> *@
+                                                @* </li> *@
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                index++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-12">
+                    <nav class="float-end">
+                        <ul class="pagination">
+                            @if (Model.PageNumber > 1)
+                            {
+                                <li class="page-item">
+                                    <a asp-page="./Index" class="page-link" asp-route-Search="@Model.Search" asp-route-PageNumber="@(Model.PageNumber -1)">Previous</a>
+                                </li>
+                            }
+                            @for (int i = 1; i < Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                                    <a asp-page="./Index" class="page-link" asp-route-Search="@Model.Search" asp-route-PageNumber="@i">@i</a>
+                                </li>
+                            }
+
+                            @if (Model.PageNumber < Model.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a asp-page="./Index" class="page-link" asp-route-Search="@Model.Search" asp-route-PageNumber="@(Model.PageNumber+1)">Next</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts {
+    <script>
+        function confirmDelete(url) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url; // redirects to OnGetDelete
+                }
+            });
+        }
+    </script>
+}

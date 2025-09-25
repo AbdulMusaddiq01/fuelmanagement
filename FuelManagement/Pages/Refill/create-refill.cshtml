@@ -1,0 +1,153 @@
+﻿@page
+@using System.Text.Json
+@model FuelManagement.Pages.Refill.create_refillModel
+@{
+
+	
+}
+
+<div class="container">
+	<div class="row">
+		
+		<div class="col-md-8">
+			<form method="post" asp-page-handler="Save">
+				<div class="col-md-12 mx-auto">
+					@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+					{
+						<span class="alert alert-danger">@Model.ErrorMessage</span>
+					}
+
+					<input type="hidden" asp-for="refill.id" />
+					<div class="row">
+						<div class="col-md-12 mb-3">
+							<label>Tank</label>
+							<select class="form-control" asp-for="refill.tank_id" onchange="getTankdetails(this)">
+								<option selected disabled>Select a tank</option>
+								@foreach (var tank in Model.tanks)
+								{
+									<option value="@tank["id"]"
+											data-code="@tank["code"]"
+											data-fueltype="@tank["fuel_type"]"
+											data-tanksize="@tank["tank_size"]"
+											data-availableqty="@tank["available_qty"]">
+											@tank["code"] - @tank["fuel_type"]
+									</option>
+								}
+							</select>
+							<span asp-validation-for="refill.tank_id" class="text-danger"></span>
+						</div>
+
+						<div class="col-md-6 mb-3">
+							<label>Refill Date</label>
+							<input type="date" class="form-control" asp-for="refill.refill_date" placeholder="Select refill date" />
+							<span asp-validation-for="refill.refill_date" class="text-danger"></span>
+						</div>
+
+						<div class="col-md-6 mb-3">
+							<label>Quantity</label>
+							<input type="number" id="quantity" class="form-control" asp-for="refill.quantity_added" placeholder="Enter quantity added" oninput="checkAllowedQty(this,@(Model.refill != null ? Model.refill.id : 0))" />
+							<span asp-validation-for="refill.quantity_added" class="text-danger"></span>
+						</div>
+
+						<div class="col-md-6 mb-3">
+							<label>Price</label>
+							<input type="number" class="form-control" asp-for="refill.cost_per_liter" placeholder="Enter cost per litre" />
+							<span asp-validation-for="refill.cost_per_liter" class="text-danger"></span>
+						</div>
+
+						<div class="col-md-6 mb-3">
+							<label>Total</label>
+							<input type="number" id="total" class="form-control" asp-for="refill.total" placeholder="Auto-calculated" readonly disabled />
+						</div>
+
+						<div class="col-md-6 mb-3">
+							<label>Invoice No</label>
+							<input type="text" class="form-control" asp-for="refill.invoice_no" placeholder="Enter invoice number" />
+							<span asp-validation-for="refill.invoice_no" class="text-danger"></span>
+						</div>
+
+						<div class="col-md-6 mb-3">
+							<label>Vendor</label>
+							<input type="text" class="form-control" asp-for="refill.vendor_name" placeholder="Enter vendor name" />
+							<span asp-validation-for="refill.vendor_name" class="text-danger"></span>
+						</div>
+
+						<div class="col-md-12">
+							<a asp-page="./Index" class="btn btn-secondary">Close</a>
+							<button type="submit" class="btn btn-primary">Save</button>
+						</div>
+					</div>
+				</div>
+			</form>
+
+		</div>
+
+		<div class="col-md-4">
+			<div class="tank-container mx-auto">
+				<div class="fuel" id="tank" style="height:0%"></div>
+			</div>
+			<div class="tank-label">
+				<label>Tank Size : <span id="tank-size"></span></label> / 
+				<label>Available Qty <span id="available-qty"></span></label>
+			</div>
+		</div>
+	
+	</div>
+</div>
+
+@section scripts{
+	<script>
+		const defaultTankSize = @JsonSerializer.Serialize(Model.tank_size);
+		const defaultAvailableQty = @JsonSerializer.Serialize(Model.available_qty);
+
+		document.getElementById("tank-size").innerHTML =  defaultTankSize;
+		document.getElementById("available-qty").innerHTML =  defaultAvailableQty;
+
+		var availableqty = (defaultAvailableQty / defaultTankSize * 100).toFixed(1);
+		document.getElementById("tank").style.height  = availableqty+"%";
+
+
+		function getTankdetails(selectelement){
+			const option = selectelement.options[selectelement.selectedIndex];
+			const details = {
+				id : option.value,
+				code : option.getAttribute("data-code"),
+				fuelType : option.getAttribute("data-fueltype"),
+				tanksize : option.getAttribute("data-tanksize"),
+				availableqty : option.getAttribute("data-availableqty")
+			};
+
+			document.getElementById("tank-size").innerHTML = details.tanksize ;
+			document.getElementById("available-qty").innerHTML = details.availableqty;
+
+			var availableqty = (details.availableqty / details.tanksize * 100).toFixed(1);
+			document.getElementById("tank").style.height  = availableqty+"%";
+			document.getElementById("quantity").max = details.tanksize - details.availableqty;
+		}
+	</script>
+
+	<script>
+			function checkAllowedQty(qty, id) {
+			let max;
+			if (id !== undefined) {
+				const defaultTankSize = @JsonSerializer.Serialize(Model.tank_size);
+				const defaultAvailableQty = @JsonSerializer.Serialize(Model.available_qty);
+
+				max = defaultTankSize - defaultAvailableQty;
+			} else {
+				max = document.getElementById("quantity").max || 1;
+			}
+
+			// Always update the max attribute
+			document.getElementById("quantity").max = max;
+
+			// Only clamp if the value is greater than max
+			if (parseFloat(qty.value) > max) {
+				qty.value = max;
+			} else if (parseFloat(qty.value) < 1 || qty.value === "") {
+				qty.value = 1; // optional: minimum 1
+			}
+		}
+	</script>
+
+}

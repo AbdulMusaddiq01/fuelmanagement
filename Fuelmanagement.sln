@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuelmanagementApi", "FuelmanagementApi\FuelmanagementApi.csproj", "{091DB67A-E883-4DCA-9BA5-788809AB2450}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuelManagement", "FuelManagement\FuelManagement.csproj", "{0EED4C70-D88B-4511-9EE9-4497ACF25AD4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{091DB67A-E883-4DCA-9BA5-788809AB2450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{091DB67A-E883-4DCA-9BA5-788809AB2450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{091DB67A-E883-4DCA-9BA5-788809AB2450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{091DB67A-E883-4DCA-9BA5-788809AB2450}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EED4C70-D88B-4511-9EE9-4497ACF25AD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EED4C70-D88B-4511-9EE9-4497ACF25AD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EED4C70-D88B-4511-9EE9-4497ACF25AD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EED4C70-D88B-4511-9EE9-4497ACF25AD4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {924E6006-9B57-46B4-9AC5-3230ADE6F713}
+	EndGlobalSection
+EndGlobal

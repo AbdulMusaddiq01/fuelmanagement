@@ -1,0 +1,188 @@
+﻿@page
+@model FuelManagement.Pages.issue_fuel.issue_fuelModel
+@{
+
+    var token = HttpContext.Session.GetString("AuthToken").ToString();
+}
+
+
+<div class="container">
+    <div class="row">
+
+        <form method="post" asp-page-handler="Save">
+            <fieldset @(Model.issueFuel.id > 0 || Model.issueFuel.id == null ? "disabled" : "")>
+                <div class="col-md-6 mx-auto row">
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="col-md-12 mb-3">
+                            <div class="alert alert-danger">@Model.ErrorMessage</div>
+                        </div>
+                    }
+
+                    <input type="hidden" asp-for="issueFuel.id" />
+                    <input type="hidden" class="form-control" asp-for="issueFuel.issuer_id" />
+
+
+                    <div class="col-md-6 mb-3">
+                        <label>Tank</label>
+                        <select class="form-control" asp-for="issueFuel.tank_id" onchange="getTankdetails(this)">
+                            <option selected disabled>Select a tank</option>
+                            @foreach (var tank in Model.tanks)
+                            {
+                                <option value="@tank["id"]"
+                                data-code="@tank["code"]"
+                                data-fueltype="@tank["fuel_type"]"
+                                data-tanksize="@tank["tank_size"]"
+                                data-availableqty="@tank["available_qty"]">
+                                    @tank["code"] - @tank["fuel_type"]
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="issueFuel.tank_id" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Available Quantity</label>
+                        <input class="form-control" id="available_qty" asp-for="issueFuel.available_qty" readonly  />
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label>Vehicle</label>
+                        <select class="form-control" asp-for="issueFuel.issued_to_id" onchange="checkLastFueled(this)">
+                            <option selected disabled>Select a tank</option>
+                            @foreach (var vehicle in Model.vehicles)
+                            {
+                                <option value="@vehicle["id"]">@vehicle["vehicle_number"]</option>
+                            }
+                        </select>
+                        <span asp-validation-for="issueFuel.tank_id" class="text-danger"></span>
+                    </div>
+
+                    @if(Model.issueFuel.id <= 0)
+                    {
+                        <div class="col-md-12">
+                            <h2>Last Issued Details</h2>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Issued Qty : <span id="lastissuedqty"></span></h6>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Odometer Reading : <span id="odoreading"></span></h6>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Date & Time : <span id="datetime"></span></h6>
+                        </div>
+                    }
+                    
+
+                    <div class="col-md-12 mb-3">
+                        <label>Issue Date</label>
+                        <input type="datetime-local" class="form-control"
+                               asp-for="issueFuel.issue_date"
+                               max="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                               placeholder="Select refill date" />
+                        <span asp-validation-for="issueFuel.issue_date" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label>Odometer Reading</label>
+                        <input type="number" class="form-control" asp-for="issueFuel.odometer_reading" />
+                        <span asp-validation-for="issueFuel.odometer_reading" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Quantity</label>
+                        <input type="number" class="form-control" asp-for="issueFuel.quantity" oninput="calculateBalanceAfter(this)" />
+                        <span asp-validation-for="issueFuel.quantity" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Balance After Issue</label>
+                        <input type="number" id="balance_after" class="form-control" asp-for="issueFuel.balance_after" readonly  />
+                    </div>
+
+
+
+
+
+                </div>
+
+            </fieldset>
+
+            <div class="col-md-6 mx-auto">
+                <div class="col-md-12">
+                    <a asp-page="./Index" class="btn btn-secondary">Close</a>
+                    <button type="submit" class="btn btn-primary" @(Model.issueFuel.id > 0 || Model.issueFuel.id == null ? "disabled" : "")>Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        function getTankdetails(selectelement){
+            const option = selectelement.options[selectelement.selectedIndex];
+            const details = {
+                id : option.value,
+                code : option.getAttribute("data-code"),
+                fuelType : option.getAttribute("data-fueltype"),
+                tanksize : option.getAttribute("data-tanksize"),
+                availableqty : option.getAttribute("data-availableqty")
+            };
+            document.getElementById("available_qty").value = details.availableqty;
+            document.getElementById("balance_after").value = details.availableqty;
+        }
+
+    </script>
+
+    <script>
+        function calculateBalanceAfter(d){
+            var availableqty = document.getElementById("available_qty").value;
+            if(d.value > 0){
+                document.getElementById("balance_after").value = availableqty - d.value;
+            }else{
+                document.getElementById("balance_after").value = availableqty;
+            }
+
+        }
+    </script>
+
+    <script>
+        function checkLastFueled(d){
+                var authToken = '@HttpContext.Session.GetString("AuthToken")';
+                // $.ajax({
+                //     url: '/api/Fuel/check-vehicle-last-fueled/' + 13,
+                //     type: 'GET',
+                //     headers: {
+                //         'Authorization': 'Bearer ' + authToken
+                //     },
+                //     success: function (data) {
+                //         console.log("Last fueled details:", data);
+                //     },
+                //     error: function (xhr) {
+                //         console.error("Error:", xhr.responseText);
+                //     }
+                // });
+
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", "Bearer " + authToken);
+
+        const requestOptions = {
+          method: "GET",
+          headers: myHeaders,
+          redirect: "follow"
+        };
+
+        fetch("http://localhost:5296/api/Fuel/check-vehicle-last-fueled/13", requestOptions)
+          .then((response) => response.text())
+          .then((result) => {
+              var data = JSON.parse(result);
+
+              document.getElementById("lastissuedqty").innerHTML = data[0].quantity;
+              document.getElementById("odoreading").innerHTML = data[0].odometer_reading;
+              document.getElementById("datetime").innerHTML = data[0].issue_date;
+          }
+          )
+          .catch((error) => console.error(error));
+        }
+    </script>
+}

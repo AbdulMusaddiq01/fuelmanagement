@@ -1,0 +1,57 @@
+﻿@page
+@model FuelManagement.Pages.User.create_userModel
+@{
+}
+
+
+<div class="container">
+	
+	<div class="row">
+
+        <form method="post" asp-page-handler="Save">
+            <div class="col-md-6 mx-auto">
+                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="col-md-12 mb-3">
+                        <div class="alert alert-danger">@Model.ErrorMessage</div>
+                    </div>
+                }
+
+                <input type="hidden" asp-for="loginUser.id" />
+
+                <div class="col-md-12 mb-3">
+                    <label asp-for="loginUser.name" class="form-label">Name</label>
+                    <input type="text" class="form-control" asp-for="loginUser.name" placeholder="Enter name" />
+                    <span asp-validation-for="loginUser.name" class="text-danger"></span>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label asp-for="loginUser.username" class="form-label">Username</label>
+                    <input type="text" class="form-control" asp-for="loginUser.username" placeholder="Enter username" />
+                    <span asp-validation-for="loginUser.username" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label asp-for="loginUser.password"  class="form-label">Password</label>
+                    <input type="text" class="form-control" asp-for="loginUser.password" placeholder="Enter password" />
+                    <span asp-validation-for="loginUser.password" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label asp-for="loginUser.role" class="form-label">Role</label>
+                    <select class="form-control" asp-for="loginUser.role">
+                        <option selected disabled>Select</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Issuer">Issuer</option>
+                    </select>
+                    <span asp-validation-for="loginUser.role" class="text-danger"></span>
+                </div
+
+                <div class="col-md-12">
+                    <a asp-page="./Index" class="btn btn-secondary">Close</a>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
+		
+	</div>
+</div>

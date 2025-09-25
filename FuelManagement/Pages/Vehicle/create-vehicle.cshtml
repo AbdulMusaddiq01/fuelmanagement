@@ -1,0 +1,56 @@
+﻿@page
+@model FuelManagement.Pages.Vehicle.create_vehicleModel
+@{
+}
+<div class="container">
+	<div class="row">
+		<div class="col-md-6 mx-auto">
+			<div class="card">
+				<div class="card-body">
+					<form method="post" asp-page-handler="Save">
+						<div class="row">
+							<div class="col-md-12 text-center">
+								<h2>Create / Update vehicle</h2>
+							</div>
+							@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+							{
+								<span class="alert alert-danger mt-3">@Model.ErrorMessage</span>
+							}
+
+							<input type="hidden" asp-for="vehicle.id" />
+
+							<div class="col-md-12 mb-3">
+								<label>Vehicle Number</label>
+								<input type="text" asp-for="vehicle.vehicle_number" class="form-control" placeholder="Vehicle Number" />
+								<span asp-validation-for="vehicle.vehicle_number" class="text-danger"></span>
+							</div>
+
+							<div class="col-md-12 mb-3">
+								<label>Tank Capacity</label>
+								<input type="number" asp-for="vehicle.tank_size" class="form-control" placeholder="Tank Capacity" />
+								<span asp-validation-for="vehicle.tank_size" class="text-danger"></span>
+							</div>
+
+							<div class="col-md-12 mb-3">
+								<label>Driver Name</label>
+								<input type="text" asp-for="vehicle.driver_name" class="form-control" placeholder="Driver Name" />
+								<span asp-validation-for="vehicle.driver_name" class="text-danger"></span>
+							</div>
+
+							<div class="col-md-12 mb-3">
+								<label>Odometer Reading</label>
+								<input type="text" asp-for="vehicle.odometer_reading" class="form-control" placeholder="Odometer Reading" />
+								<span asp-validation-for="vehicle.odometer_reading" class="text-danger"></span>
+							</div>
+
+							<div class="col-md-12">
+								<a asp-page="./Index" class="btn btn-secondary">Close</a>
+								<button type="submit" class="btn btn-primary float-end">Save</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

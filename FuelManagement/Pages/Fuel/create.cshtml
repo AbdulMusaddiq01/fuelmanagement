@@ -1,0 +1,40 @@
+﻿@page
+@model FuelManagement.Pages.Fuel.createModel
+@{
+
+	
+
+}
+
+<div class="container">
+    <div class="row">
+
+        <form method="post" asp-page-handler="Save">
+            <div class="col-md-6 mx-auto">
+                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="col-md-12 mb-3">
+                        <div class="alert alert-danger">@Model.ErrorMessage</div>
+                    </div>
+                }
+
+                <input type="hidden"  asp-for="fuelType.id" />
+
+                <div class="col-md-12 mb-3">
+                    <label asp-for="fuelType.Name" for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" asp-for="fuelType.Name"  placeholder="Enter name" />
+                    <span asp-validation-for="fuelType.Name" class="text-danger"></span>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label asp-for="fuelType.ColorCode" for="code" class="form-label">Code</label>
+                    <input type="text" class="form-control" asp-for="fuelType.ColorCode" placeholder="Enter code" />
+                </div>
+
+                <div class="col-md-12">
+                     <a asp-page="./fuel-types" class="btn btn-secondary">Close</a>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

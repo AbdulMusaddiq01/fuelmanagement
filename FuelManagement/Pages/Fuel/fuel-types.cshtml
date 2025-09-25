@@ -1,0 +1,194 @@
+﻿@page
+@model FuelManagement.Pages.Fuel.fuel_typesModel
+@{
+    var showmodal = Model.ShowModal;
+}
+<div class="card">
+    <div class="card-body">
+        <div class="conatiner">
+            <div class="row">
+                <div class="col-md-6">
+                    <form method="get">
+                        <div class="input-group mb-3">
+                            <input type="text" name="Search" value="@Model.Search" class="form-control" placeholder="Search fuel types..." />
+                            @if (!string.IsNullOrEmpty(Model.Search))
+                            {
+                                <a asp-page="./fuel-types" class="btn btn-primary">Clear</a>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            }
+                        </div>
+                    </form>
+
+                </div>
+                <div class="col-md-6">
+                    <a asp-page="./create" asp-route-id="0" class="text-light" style="text-decoration:none"><button class="btn btn-primary"> Add</button></a>
+                </div>
+
+                <div class="col-md-12 mt-3">
+                    <table class="table table-responsive">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Fuel</th>
+                                <th scope="col">Code</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var index = 1 + ((Model.PageNumber -1) * Model.PageSize);
+                            }
+                            @foreach (var fuel in Model.LstFuelTypes)
+                            {
+                                <tr>
+                                    <td>@index</td>
+                                    <td>@fuel["Name"]</td>
+                                    <td>@fuel["ColorCode"]</td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item edit-fuel"
+                                                    asp-page="./create" asp-route-id="@fuel["id"]"  
+                                                    >Edit</a>
+                                                   </li>
+                                                <li><a class="dropdown-item text-danger"
+                                                       onclick="confirmDelete('@Url.Page("./fuel-types", new {handler="Delete",id=@fuel["id"]})')">Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                index++;
+                            }
+                            
+                            
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-12 ">
+                    <nav class="float-end">
+
+                        <ul class="pagination">
+                            @if (Model.PageNumber > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-page="./fuel-types" asp-route-Search="@Model.Search" asp-route-PageNumber="@(Model.PageNumber - 1)">Previous</a>
+                                </li>
+                            }
+
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                    <a class="page-link" asp-page="./fuel-types" asp-route-Search="@Model.Search" asp-route-PageNumber="@i">@i</a>
+                                </li>
+                            }
+
+                            @if (Model.PageNumber < Model.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-page="./fuel-types" asp-route-Search="@Model.Search" asp-route-PageNumber="@(Model.PageNumber + 1)">Next</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Save">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                        {
+                            <div class="col-md-12 mb-3">
+                                <div class="alert alert-danger">@Model.ErrorMessage</div>
+                            </div>
+                        }
+
+                        <input type="hidden" id="FuelId" name="fuelType.id" />
+
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="fuelType.Name" for="name" class="form-label">Name</label>
+                            <input type="text" id="FuelName" class="form-control" asp-for="fuelType.Name" placeholder="Enter name" />
+                            <span asp-validation-for="fuelType.Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="fuelType.ColorCode" for="code" class="form-label">Code</label>
+                            <input type="text" id="FuelColor" class="form-control" asp-for="fuelType.ColorCode" placeholder="Enter code" />
+                        </div>
+                        
+                    </div>
+			</div>
+			<div class="modal-footer">
+					<button type="submit" class="btn btn-secondary" formaction="/fuel-types?handler=Cancel" data-bs-dismiss="modal">Close</button> 
+				<button type="submit" class="btn btn-primary">Save changes</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+@section scripts{
+
+	@if (Model.ShowModal)
+	{
+		<script>
+			var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+			modal.show();
+		</script>
+	}
+
+    
+    <script>
+        function confirmDelete(url) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url; // redirects to OnGetDelete
+                }
+            });
+        }
+    </script>
+
+
+       <script>
+            document.querySelectorAll(".edit-fuel").forEach(el => {
+            el.addEventListener("click", async function() {
+                let id = this.getAttribute("data-id");
+
+                    const response = await fetch(`/api/Fuel/ViewFuelType/{id}`);
+                const data = await response.json();
+
+                // Populate hidden + visible fields
+                document.getElementById("FuelId").value = data.id;
+                document.getElementById("FuelName").value = data.Name;
+                document.getElementById("FuelColor").value = data.ColorCode;
+            });
+        });
+
+       </script>
+}
